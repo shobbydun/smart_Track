@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "435019707457",
+    "project_id": "smart-track-81361",
+    "storage_bucket": "smart-track-81361.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:435019707457:android:81445499a687041f9a82c0",
+        "android_client_info": {
+          "package_name": "com.example.smart_track"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAwp3v57WfOWW4pnDWUQ9z9oplZ-jKKzcU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
