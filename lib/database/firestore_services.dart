@@ -20,7 +20,6 @@ class SaleWithProduct {
   });
 }
 
-// Product class definition
 class Product {
   final String id;
   final String name;
@@ -36,20 +35,18 @@ class Product {
     required this.timestamp,
   });
 
-  // Ensure that data is correctly parsed from Firestore
   factory Product.fromFirestore(DocumentSnapshot doc) {
-    final data = doc.data() as Map<String, dynamic>;
+    final data = doc.data() as Map<String, dynamic>?;
     return Product(
       id: doc.id,
-      name: data['name'] ?? 'Unknown',
-      stock: data['stock'] ?? 0,
-      price: (data['price'] as num?)?.toDouble() ?? 0.0,
-      timestamp: data['timestamp'] ?? Timestamp.now(),
+      name: data?['name'] ?? 'Unknown',
+      stock: data?['stock'] ?? 0,
+      price: (data?['price'] as num?)?.toDouble() ?? 0.0,
+      timestamp: data?['timestamp'] ?? Timestamp.now(),
     );
   }
 }
 
-// Sale class definition
 class Sale {
   final String id;
   final String productId;
@@ -90,16 +87,14 @@ class FirestoreServices {
 
   String get _userCollection => 'users/$userId';
 
-  // Method to fetch the business name
   Future<String?> getBusinessName() async {
     try {
       if (userId.isEmpty) {
         print("User ID is empty.");
-        return null;
+        return 'No Business Name';
       }
 
       final docSnapshot = await _db.collection('users').doc(userId).get();
-
       if (!docSnapshot.exists) {
         print("Document does not exist for userId: $userId");
         return 'No Business Name';
@@ -118,7 +113,6 @@ class FirestoreServices {
     }
   }
 
-  // Sale methods
   Future<void> addSale(String productId, int quantity) async {
     try {
       await _db.runTransaction((transaction) async {
@@ -161,6 +155,7 @@ class FirestoreServices {
       if (saleDoc.exists) {
         return Sale.fromFirestore(saleDoc.data()!, saleDoc.id);
       } else {
+        print("Sale not found for ID: $saleId");
         return null;
       }
     } catch (e) {
@@ -221,9 +216,12 @@ class FirestoreServices {
         .collection('$_userCollection/sales')
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Sale.fromFirestore(doc.data() as Map<String, dynamic>, doc.id))
-            .toList());
+        .map((snapshot) {
+          final sales = snapshot.docs
+              .map((doc) => Sale.fromFirestore(doc.data() as Map<String, dynamic>, doc.id))
+              .toList();
+          return sales;
+        });
   }
 
   Stream<List<Sale>> getSalesByDate(DateTime startOfDay, DateTime endOfDay) {
@@ -234,12 +232,12 @@ class FirestoreServices {
         .orderBy('timestamp', descending: true)
         .snapshots()
         .map((snapshot) {
-      return snapshot.docs.map((doc) {
-        final data = doc.data() as Map<String, dynamic>;
-        final sale = Sale.fromFirestore(data, doc.id);
-        return sale;
-      }).toList();
-    });
+          final sales = snapshot.docs.map((doc) {
+            final data = doc.data() as Map<String, dynamic>;
+            return Sale.fromFirestore(data, doc.id);
+          }).toList();
+          return sales;
+        });
   }
 
   Stream<double> getTotalSalesByDate(DateTime startOfDay, DateTime endOfDay) {
@@ -252,7 +250,6 @@ class FirestoreServices {
     });
   }
 
-  // Product methods
   Future<void> addProduct(String name, int stock, double price) async {
     try {
       await _db.collection('$_userCollection/products').add({
@@ -292,9 +289,12 @@ class FirestoreServices {
         .collection('$_userCollection/products')
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => Product.fromFirestore(doc))
-            .toList());
+        .map((snapshot) {
+          final products = snapshot.docs
+              .map((doc) => Product.fromFirestore(doc))
+              .toList();
+          return products;
+        });
   }
 
   Future<String?> getProductNameById(String productId) async {
@@ -303,6 +303,7 @@ class FirestoreServices {
       final productSnapshot = await productRef.get();
 
       if (!productSnapshot.exists) {
+        print("Product not found for ID: $productId");
         return null;
       }
 
@@ -314,7 +315,6 @@ class FirestoreServices {
     }
   }
 
-  // Feedback methods
   Future<void> addFeedback(String feedback) async {
     try {
       await _db.collection('$_userCollection/feedback').add({
@@ -326,7 +326,6 @@ class FirestoreServices {
     }
   }
 
-  // Notification for low stock
   Future<void> checkLowStockAndNotify() async {
     try {
       final products = await _db.collection('$_userCollection/products').get();
@@ -385,16 +384,18 @@ class FirestoreServices {
     }
   }
 
-  // Notifications methods
   Stream<List<NotificationModel>> getNotifications() {
     return _db
         .collection('$_userCollection/notifications')
         .orderBy('timestamp', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => NotificationModel.fromFirestore(
-                doc.data() as Map<String, dynamic>, doc.id))
-            .toList());
+        .map((snapshot) {
+          final notifications = snapshot.docs
+              .map((doc) => NotificationModel.fromFirestore(
+                  doc.data() as Map<String, dynamic>, doc.id))
+              .toList();
+          return notifications;
+        });
   }
 
   Future<void> deleteNotification(String id) async {
@@ -408,8 +409,7 @@ class FirestoreServices {
   Future<void> deleteAllNotifications() async {
     try {
       final batch = _db.batch();
-      final notifications =
-          await _db.collection('$_userCollection/notifications').get();
+      final notifications = await _db.collection('$_userCollection/notifications').get();
 
       for (var doc in notifications.docs) {
         batch.delete(doc.reference);
@@ -420,7 +420,4 @@ class FirestoreServices {
       print("Error deleting all notifications for user $userId: $e");
     }
   }
-
-
-  
 }

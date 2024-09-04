@@ -35,7 +35,6 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
-    // Dispose of the controllers when the widget is disposed
     businessNameController.dispose();
     emailController.dispose();
     passwordController.dispose();
@@ -50,14 +49,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
     try {
       if (passwordController.text == confirmPasswordController.text) {
-        // Create user with Firebase Authentication
         UserCredential userCredential =
             await FirebaseAuth.instance.createUserWithEmailAndPassword(
           email: emailController.text,
           password: passwordController.text,
         );
 
-        // Save user information to Firestore
         String userId = userCredential.user?.uid ?? '';
         if (userId.isNotEmpty) {
           await FirebaseFirestore.instance.collection('users').doc(userId).set(

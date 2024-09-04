@@ -383,19 +383,19 @@ Future<void> _fetchBusinessData() async {
                       ),
                       SizedBox(height: 8),
                       Text(
-                        'Stock: $stock items',
+                        'Current Stock: $stock items',
                         style: GoogleFonts.poppins(
                           fontSize: 16,
                           color: Colors.grey[700],
                         ),
                       ),
-                      Text(
-                        'Total Sales today: Kshs ${totalSales.toStringAsFixed(2)}',
-                        style: GoogleFonts.poppins(
-                          fontSize: 16,
-                          color: Colors.grey[700],
-                        ),
-                      ),
+                      // Text(
+                      //   'Total Sales today: Kshs ${totalSales.toStringAsFixed(2)}',
+                      //   style: GoogleFonts.poppins(
+                      //     fontSize: 16,
+                      //     color: Colors.grey[700],
+                      //   ),
+                      // ),
                       SizedBox(height: 24),
                       Center(
                         child: ElevatedButton(

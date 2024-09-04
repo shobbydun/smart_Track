@@ -136,7 +136,7 @@ class _SalesManagementScreenState extends State<SalesManagementScreen> {
                         ],
                       ),
                       child: ListTile(
-                        title: Text('Product Name: $productName'),
+                        title: Text('Product: $productName'),
                         subtitle: Text('Kshs ${salePrice.toStringAsFixed(2)}'),
                         trailing: Text(DateFormat('yyyy-MM-dd')
                             .format(sale.timestampAsDateTime)),
